@@ -4,6 +4,7 @@ import connectToDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import { isAuth } from "./middleware/isAuth.js";
 
 dotenv.config();
 const port = process.env.PORT;
