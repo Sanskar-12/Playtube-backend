@@ -44,7 +44,7 @@ export const signUp = async (req, res) => {
       photoUrl,
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -87,7 +87,7 @@ export const signIn = async (req, res) => {
       });
     }
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
 
     res.cookie("token", token, {
       httpOnly: true,

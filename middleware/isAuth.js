@@ -14,7 +14,7 @@ export const isAuth = (req, res, next) => {
       return res.status(400).json({ message: "Token is invalid" });
     }
 
-    req.userId = token.userId;
+    req.user = isVerifiedToken;
 
     next();
   } catch (error) {
