@@ -46,6 +46,10 @@ export const signUp = async (req, res) => {
 
     const token = generateToken(user);
 
+    // remove password from user json
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "Strict",
@@ -56,7 +60,7 @@ export const signUp = async (req, res) => {
     return res.status(201).json({
       success: true,
       message: "User created successfully",
-      user,
+      user: userWithoutPassword,
     });
   } catch (error) {
     console.log("Error in signUp Controller: ", error);
@@ -89,6 +93,10 @@ export const signIn = async (req, res) => {
 
     const token = generateToken(user);
 
+    // remove password from user json
+    const userWithoutPassword = user.toObject();
+    delete userWithoutPassword.password;
+
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "Strict",
@@ -99,7 +107,7 @@ export const signIn = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "User logged in successfully",
-      user,
+      user: userWithoutPassword,
     });
   } catch (error) {
     console.log("Error in signIn Controller: ", error);
