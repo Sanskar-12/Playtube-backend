@@ -3,6 +3,7 @@ import validator from "validator";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../config/token.js";
 import { User } from "../model/userModel.js";
+import { sendMail } from "../config/sendMail.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -190,6 +191,120 @@ export const authWithGoogle = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `AuthWithGoogle Error: ${error}`,
+    });
+  }
+};
+
+export const sendOtpMail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    user.resetOtp = otp;
+    user.otpExpires = Date.now() + 5 * 60 * 1000;
+    user.isOtpVerified = false;
+
+    await user.save();
+
+    await sendMail(email, otp);
+
+    return res.status(200).json({
+      success: true,
+      message: "Otp sent Successfully",
+    });
+  } catch (error) {
+    console.log("Error in send otp mail", error);
+    return res.status(500).json({
+      success: false,
+      message: `SendOTPMail Error: ${error}`,
+    });
+  }
+};
+
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (otp !== user.resetOtp || user.otpExpires < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid OTP",
+      });
+    }
+
+    user.resetOtp = undefined;
+    user.otpExpires = undefined;
+    user.isOtpVerified = true;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Otp verified Successfully",
+    });
+  } catch (error) {
+    console.log("Error in verify otp", error);
+    return res.status(500).json({
+      success: false,
+      message: `VerifyOTP Error: ${error}`,
+    });
+  }
+};
+
+export const resetPassword = async () => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!user.isOtpVerified) {
+      return res.status(400).json({
+        success: false,
+        message: "Otp is not verified",
+      });
+    }
+
+    const hashPassword = await bcrypt.hash(password, 10);
+    user.password = hashPassword;
+    user.isOtpVerified = false;
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password reset Successful",
+    });
+  } catch (error) {
+    console.log("Error in reset password", error);
+    return res.status(500).json({
+      success: false,
+      message: `ResetPassword Error: ${error}`,
     });
   }
 };
