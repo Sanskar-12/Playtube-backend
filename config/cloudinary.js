@@ -11,14 +11,27 @@ const uploadOnCloudinary = async (filePath) => {
   try {
     if (!filePath) return null;
 
+    // If it's already an online URL (e.g., Google photo), just return it
+    if (filePath.startsWith("http")) {
+      return filePath;
+    }
+
     const result = await cloudinary.uploader.upload(filePath, {
       resource_type: "auto",
     });
-    fs.unlinkSync(filePath);
+
+    // Delete local file only if it exists locally
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
     return result.secure_url;
   } catch (error) {
     console.log(error);
-    fs.unlinkSync(filePath);
+
+    if (fs.existsSync(filePath) && !filePath.startsWith("http")) {
+      fs.unlinkSync(filePath);
+    }
   }
 };
 
