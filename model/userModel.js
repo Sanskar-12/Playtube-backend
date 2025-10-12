@@ -22,6 +22,16 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel",
     },
+    resetOtp: {
+      type: String,
+    },
+    otpExpires: {
+      type: Date,
+    },
+    isOtpVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
