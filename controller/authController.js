@@ -84,7 +84,7 @@ export const signIn = async (req, res) => {
       });
     }
 
-    const isPasswordMatch = bcrypt.compare(password, user.password);
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
       return res.status(400).json({
         success: false,
@@ -270,7 +270,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-export const resetPassword = async () => {
+export const resetPassword = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -291,6 +291,7 @@ export const resetPassword = async () => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+
     user.password = hashPassword;
     user.isOtpVerified = false;
 

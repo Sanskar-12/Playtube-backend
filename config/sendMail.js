@@ -1,10 +1,13 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER, // your Gmail address
-    pass: process.env.EMAIL_PASS, // your App Password
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
@@ -14,7 +17,6 @@ export const sendMail = async (to, otp) => {
       from: `"PlayTube" <${process.env.EMAIL_USER}>`,
       to,
       subject: "Reset your Password",
-      text,
       html: `<p>
       Your OTP for Password Reset is <b>${otp}</b>.
       It expires in 5 minutes
