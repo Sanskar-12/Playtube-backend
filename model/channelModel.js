@@ -4,7 +4,7 @@ const channelSchema = new mongoose.Schema(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      red: "User",
+      ref: "User",
       required: true,
     },
     name: {

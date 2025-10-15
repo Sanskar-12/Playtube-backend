@@ -93,11 +93,8 @@ export const createChannel = async (req, res) => {
 export const getChannelData = async (req, res) => {
   try {
     const userId = req.user._id;
-    const objectId = new mongoose.Types.ObjectId(userId);
 
-    const channel = await Channel.findOne({ owner: objectId }).populate(
-      "owner"
-    );
+    const channel = await Channel.findOne({ owner: userId }).populate("owner");
 
     if (!channel) {
       return res.status(404).json({ message: "Channel doesn't exists" });
