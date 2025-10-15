@@ -1,6 +1,10 @@
 import express from "express";
 import { isAuth } from "../middleware/isAuth.js";
-import { createChannel, getCurrentUser } from "../controller/userController.js";
+import {
+  createChannel,
+  getChannelData,
+  getCurrentUser,
+} from "../controller/userController.js";
 import upload from "../middleware/multer.js";
 
 const router = express.Router();
@@ -21,5 +25,6 @@ router.post(
   ]),
   createChannel
 );
+router.get("/get/channel", isAuth, getChannelData);
 
 export default router;

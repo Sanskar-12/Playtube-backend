@@ -1,6 +1,7 @@
 import uploadOnCloudinary from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { User } from "../model/userModel.js";
+import mongoose from "mongoose";
 
 export const getCurrentUser = async (req, res) => {
   try {
@@ -85,6 +86,33 @@ export const createChannel = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `createChannel Error: ${error}`,
+    });
+  }
+};
+
+export const getChannelData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const objectId = new mongoose.Types.ObjectId(userId);
+
+    const channel = await Channel.findOne({ owner: objectId }).populate(
+      "owner"
+    );
+
+    if (!channel) {
+      return res.status(404).json({ message: "Channel doesn't exists" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Channel fetched successfully",
+      channel,
+    });
+  } catch (error) {
+    console.log("Error in get Channel Data", error);
+    return res.status(500).json({
+      success: false,
+      message: `getChannelData Error: ${error}`,
     });
   }
 };
