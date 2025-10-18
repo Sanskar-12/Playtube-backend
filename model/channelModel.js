@@ -43,7 +43,7 @@ const channelSchema = new mongoose.Schema(
     shorts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Short",
+        ref: "Shorts",
       },
     ],
     playlists: [
