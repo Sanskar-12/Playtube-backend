@@ -1,4 +1,7 @@
-import uploadOnCloudinary from "../config/cloudinary.js";
+import { channel } from "diagnostics_channel";
+import uploadOnCloudinary, {
+  deleteFromCloudinary,
+} from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { User } from "../model/userModel.js";
 import mongoose from "mongoose";
@@ -86,6 +89,78 @@ export const createChannel = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `createChannel Error: ${error}`,
+    });
+  }
+};
+
+export const updateChannel = async (req, res) => {
+  try {
+    const { name, description, category } = req.body;
+
+    const userId = req.user._id;
+
+    let existingChannel = await Channel.findOne({
+      owner: userId,
+    });
+
+    if (!existingChannel) {
+      return res.status(400).json({ message: "Channel not found" });
+    }
+
+    if (name && name !== existingChannel.name) {
+      const existingChannelName = await Channel.findOne({
+        name,
+      });
+
+      if (existingChannelName) {
+        return res.status(400).json({ message: "Channel Name already taken" });
+      }
+
+      existingChannel.name = name;
+    }
+
+    if (description !== undefined) {
+      existingChannel.description = description;
+    }
+
+    if (category !== undefined) {
+      existingChannel.category = category;
+    }
+
+    if (req.files?.avatar) {
+      await deleteFromCloudinary(existingChannel?.avatar);
+      const avatar = await uploadOnCloudinary(req.files.avatar[0].path);
+      existingChannel.avatar = avatar;
+    }
+    if (req.files?.banner) {
+      await deleteFromCloudinary(existingChannel?.banner);
+      const banner = await uploadOnCloudinary(req.files.banner[0].path);
+      existingChannel.banner = banner;
+    }
+
+    const updatedChannel = await existingChannel.save();
+
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        userName: name || undefined,
+        photoUrl: updatedChannel.avatar || undefined,
+      },
+      {
+        new: true,
+      }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Channel Updated Successfully",
+      updatedChannel,
+    });
+  } catch (error) {
+    console.log("Error in update Channel", error);
+    return res.status(500).json({
+      success: false,
+      message: `updateChannel Error: ${error}`,
     });
   }
 };

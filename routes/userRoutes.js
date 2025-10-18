@@ -4,6 +4,7 @@ import {
   createChannel,
   getChannelData,
   getCurrentUser,
+  updateChannel,
 } from "../controller/userController.js";
 import upload from "../middleware/multer.js";
 
@@ -24,6 +25,21 @@ router.post(
     },
   ]),
   createChannel
+);
+router.put(
+  "/update/channel",
+  isAuth,
+  upload.fields([
+    {
+      name: "avatar",
+      maxCount: 1,
+    },
+    {
+      name: "banner",
+      maxCount: 1,
+    },
+  ]),
+  updateChannel
 );
 router.get("/get/channel", isAuth, getChannelData);
 
