@@ -1,10 +1,8 @@
-import { channel } from "diagnostics_channel";
 import uploadOnCloudinary, {
   deleteFromCloudinary,
 } from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { User } from "../model/userModel.js";
-import mongoose from "mongoose";
 
 export const getCurrentUser = async (req, res) => {
   try {
