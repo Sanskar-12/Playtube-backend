@@ -6,7 +6,7 @@ export const createVideo = async (req, res) => {
   try {
     const { title, description, tags, channelId } = req.body;
 
-    if (!title || !req.files.video || !req.files.thumbnail || channelId) {
+    if (!title || !req.files.video || !req.files.thumbnail || !channelId) {
       return res.status(400).json({
         success: false,
         message: "title, videoUrl, thumbnail, channelId is required",
