@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectToDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import contentRouter from "./routes/contentRoute.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/v1", authRouter);
 app.use("/api/v1", userRouter);
+app.use("/api/v1", contentRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
