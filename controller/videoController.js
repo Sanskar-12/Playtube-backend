@@ -70,3 +70,30 @@ export const createVideo = async (req, res) => {
     });
   }
 };
+
+export const getAllVideos = async (req, res) => {
+  try {
+    const videos = await Video.find().sort({
+      createdAt: -1,
+    });
+
+    if (!videos) {
+      return res.status(404).json({
+        success: false,
+        message: "Videos not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Videos fetched successfully",
+      videos,
+    });
+  } catch (error) {
+    console.log("Error in get All Videos", error);
+    return res.status(500).json({
+      success: false,
+      message: `getAllVideos Error: ${error}`,
+    });
+  }
+};

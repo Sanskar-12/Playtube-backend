@@ -70,3 +70,30 @@ export const createShorts = async (req, res) => {
     });
   }
 };
+
+export const getAllShorts = async (req, res) => {
+  try {
+    const shorts = await Shorts.find().sort({
+      createdAt: -1,
+    });
+
+    if (!shorts) {
+      return res.status(404).json({
+        success: false,
+        message: "Shorts not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Shorts fetched successfully",
+      shorts,
+    });
+  } catch (error) {
+    console.log("Error in get All Shorts", error);
+    return res.status(500).json({
+      success: false,
+      message: `getAllShorts Error: ${error}`,
+    });
+  }
+};
