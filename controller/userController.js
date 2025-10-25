@@ -190,3 +190,50 @@ export const getChannelData = async (req, res) => {
     });
   }
 };
+
+export const addOrRemoveSubscribers = async (req, res) => {
+  try {
+    const { channelId } = req.body;
+
+    const userId = req.user._id;
+
+    if (!channelId) {
+      return res.status(400).json({ message: "Channel Id is required" });
+    }
+
+    const channel = await Channel.findById(channelId);
+
+    if (!channel) {
+      return res.status(404).json({ message: "Channel doesn't exists" });
+    }
+
+    const isSubscribed = channel?.subscribers?.includes(userId);
+
+    if (isSubscribed) {
+      channel.subscribers = channel?.subscribers?.filter(
+        (sub) => sub._id.toString() !== userId.toString()
+      );
+    } else {
+      channel?.subscribers?.push(userId);
+    }
+
+    await channel.save();
+
+    const updatedChannel = await Channel.findById(channelId)
+      .populate("owner")
+      .populate("videos")
+      .populate("shorts");
+
+    return res.status(200).json({
+      success: true,
+      message: "Toggle Subscribe successful",
+      updatedChannel,
+    });
+  } catch (error) {
+    console.log("Error in add subscribers", error);
+    return res.status(500).json({
+      success: false,
+      message: `addSubscribers Error: ${error}`,
+    });
+  }
+};
