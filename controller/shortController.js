@@ -73,9 +73,11 @@ export const createShorts = async (req, res) => {
 
 export const getAllShorts = async (req, res) => {
   try {
-    const shorts = await Shorts.find().sort({
-      createdAt: -1,
-    });
+    const shorts = await Shorts.find()
+      .sort({
+        createdAt: -1,
+      })
+      .populate("channel");
 
     if (!shorts) {
       return res.status(404).json({
