@@ -99,3 +99,87 @@ export const getAllVideos = async (req, res) => {
     });
   }
 };
+
+export const toggleLikes = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    if (video.likes.includes(userId)) {
+      video.likes = video.likes.filter(
+        (like) => like._id.toString() !== userId.toString()
+      );
+    } else {
+      video.likes.push(userId);
+      video.dislikes = video.dislikes.filter(
+        (dislike) => dislike._id.toString() !== userId.toString()
+      );
+    }
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Video liked successfully",
+      video,
+    });
+  } catch (error) {
+    console.log("Error in toggle likes", error);
+    return res.status(500).json({
+      success: false,
+      message: `toggleLikes Error: ${error}`,
+    });
+  }
+};
+
+export const toggleDislikes = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    if (video.dislikes.includes(userId)) {
+      video.dislikes = video.dislikes.filter(
+        (dislike) => dislike._id.toString() !== userId.toString()
+      );
+    } else {
+      video.dislikes.push(userId);
+      video.likes = video.likes.filter(
+        (like) => like._id.toString() !== userId.toString()
+      );
+    }
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Video disliked successfully",
+      video,
+    });
+  } catch (error) {
+    console.log("Error in toggle dislikes", error);
+    return res.status(500).json({
+      success: false,
+      message: `toggleDislikes Error: ${error}`,
+    });
+  }
+};

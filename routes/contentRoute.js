@@ -1,6 +1,11 @@
 import { isAuth } from "../middleware/isAuth.js";
 import express from "express";
-import { createVideo, getAllVideos } from "../controller/videoController.js";
+import {
+  createVideo,
+  getAllVideos,
+  toggleDislikes,
+  toggleLikes,
+} from "../controller/videoController.js";
 import upload from "../middleware/multer.js";
 import { createShorts, getAllShorts } from "../controller/shortController.js";
 
@@ -23,6 +28,8 @@ router.post(
   createVideo
 );
 router.get("/get/all/videos", isAuth, getAllVideos);
+router.put("/toggle/likes", isAuth, toggleLikes);
+router.put("/toggle/dislikes", isAuth, toggleDislikes);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);
