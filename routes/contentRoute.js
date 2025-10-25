@@ -5,6 +5,7 @@ import {
   getAllVideos,
   toggleDislikes,
   toggleLikes,
+  toggleSave,
 } from "../controller/videoController.js";
 import upload from "../middleware/multer.js";
 import { createShorts, getAllShorts } from "../controller/shortController.js";
@@ -30,6 +31,7 @@ router.post(
 router.get("/get/all/videos", isAuth, getAllVideos);
 router.put("/toggle/likes", isAuth, toggleLikes);
 router.put("/toggle/dislikes", isAuth, toggleDislikes);
+router.put("/toggle/save", isAuth, toggleSave);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);
