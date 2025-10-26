@@ -77,7 +77,7 @@ export const getAllVideos = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("channel");
+      .populate("channel comments.author comments.replies.author");
 
     if (!videos) {
       return res.status(404).json({
@@ -279,10 +279,20 @@ export const addComment = async (req, res) => {
 
     await video.save();
 
+    const populatedVideo = await Video.findById(videoId)
+      .populate({
+        path: "comments.author",
+        select: "userName photoUrl email",
+      })
+      .populate({
+        path: "comments.replies.author",
+        select: "userName photoUrl email",
+      });
+
     return res.status(200).json({
       success: true,
       message: "Comment added successfully",
-      video,
+      video: populatedVideo,
     });
   } catch (error) {
     console.log("Error in add Comments", error);
@@ -323,10 +333,20 @@ export const addReply = async (req, res) => {
 
     await video.save();
 
+    const populatedVideo = await Video.findById(videoId)
+      .populate({
+        path: "comments.author",
+        select: "userName photoUrl email",
+      })
+      .populate({
+        path: "comments.replies.author",
+        select: "userName photoUrl email",
+      });
+
     return res.status(200).json({
       success: true,
       message: "Reply added successfully",
-      video,
+      video: populatedVideo,
     });
   } catch (error) {
     console.log("Error in add Reply", error);
