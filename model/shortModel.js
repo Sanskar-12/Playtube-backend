@@ -71,10 +71,12 @@ const shortsSchema = new mongoose.Schema(
         type: String,
       },
     ],
-    views: {
-      type: Number,
-      default: 0,
-    },
+    views: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,

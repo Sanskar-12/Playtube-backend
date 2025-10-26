@@ -222,3 +222,38 @@ export const toggleSave = async (req, res) => {
     });
   }
 };
+
+export const addViews = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    if (!video.views.includes(userId)) {
+      video.views.push(userId);
+    }
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "View Added successfully",
+      video,
+    });
+  } catch (error) {
+    console.log("Error in add Views", error);
+    return res.status(500).json({
+      success: false,
+      message: `addViews Error: ${error}`,
+    });
+  }
+};
