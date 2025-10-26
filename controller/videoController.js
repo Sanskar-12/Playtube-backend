@@ -257,3 +257,82 @@ export const addViews = async (req, res) => {
     });
   }
 };
+
+export const addComment = async (req, res) => {
+  try {
+    const { videoId, message } = req.body;
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    video.comments.push({
+      author: userId,
+      message,
+    });
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Comment added successfully",
+      video,
+    });
+  } catch (error) {
+    console.log("Error in add Comments", error);
+    return res.status(500).json({
+      success: false,
+      message: `addComment Error: ${error}`,
+    });
+  }
+};
+
+export const addReply = async (req, res) => {
+  try {
+    const { videoId, commentId, message } = req.body;
+    const userId = req.user._id;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        success: false,
+        message: "Video not found",
+      });
+    }
+
+    const comment = video.comments.id(commentId);
+
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
+
+    comment.replies.push({
+      author: userId,
+      message,
+    });
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Reply added successfully",
+      video,
+    });
+  } catch (error) {
+    console.log("Error in add Reply", error);
+    return res.status(500).json({
+      success: false,
+      message: `addReply Error: ${error}`,
+    });
+  }
+};

@@ -1,6 +1,8 @@
 import { isAuth } from "../middleware/isAuth.js";
 import express from "express";
 import {
+  addComment,
+  addReply,
   addViews,
   createVideo,
   getAllVideos,
@@ -34,6 +36,8 @@ router.put("/toggle/likes", isAuth, toggleLikes);
 router.put("/toggle/dislikes", isAuth, toggleDislikes);
 router.put("/toggle/save", isAuth, toggleSave);
 router.put("/add/views", isAuth, addViews);
+router.post("/add/comment", isAuth, addComment);
+router.post("/add/reply", isAuth, addReply);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);
