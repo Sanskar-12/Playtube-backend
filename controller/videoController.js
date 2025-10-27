@@ -272,7 +272,7 @@ export const addComment = async (req, res) => {
       });
     }
 
-    video.comments.push({
+    video.comments.unshift({
       author: userId,
       message,
     });
@@ -306,6 +306,7 @@ export const addComment = async (req, res) => {
 export const addReply = async (req, res) => {
   try {
     const { videoId, commentId, message } = req.body;
+
     const userId = req.user._id;
 
     const video = await Video.findById(videoId);
@@ -326,7 +327,7 @@ export const addReply = async (req, res) => {
       });
     }
 
-    comment.replies.push({
+    comment.replies.unshift({
       author: userId,
       message,
     });
