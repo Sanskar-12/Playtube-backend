@@ -258,102 +258,102 @@ export const addShortViews = async (req, res) => {
   }
 };
 
-// export const addShortComment = async (req, res) => {
-//   try {
-//     const { videoId, message } = req.body;
-//     const userId = req.user._id;
+export const addShortComment = async (req, res) => {
+  try {
+    const { shortId, message } = req.body;
+    const userId = req.user._id;
 
-//     const video = await Video.findById(videoId);
+    const short = await Shorts.findById(shortId);
 
-//     if (!video) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Video not found",
-//       });
-//     }
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
 
-//     video.comments.unshift({
-//       author: userId,
-//       message,
-//     });
+    short.comments.unshift({
+      author: userId,
+      message,
+    });
 
-//     await video.save();
+    await short.save();
 
-//     const populatedVideo = await Video.findById(videoId)
-//       .populate({
-//         path: "comments.author",
-//         select: "userName photoUrl email",
-//       })
-//       .populate({
-//         path: "comments.replies.author",
-//         select: "userName photoUrl email",
-//       });
+    const populatedShort = await Shorts.findById(shortId)
+      .populate({
+        path: "comments.author",
+        select: "userName photoUrl email",
+      })
+      .populate({
+        path: "comments.replies.author",
+        select: "userName photoUrl email",
+      });
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Comment added successfully",
-//       video: populatedVideo,
-//     });
-//   } catch (error) {
-//     console.log("Error in add Comments", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: `addComment Error: ${error}`,
-//     });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      message: "Comment added successfully",
+      video: populatedShort,
+    });
+  } catch (error) {
+    console.log("Error in add short Comments", error);
+    return res.status(500).json({
+      success: false,
+      message: `addShortComment Error: ${error}`,
+    });
+  }
+};
 
-// export const addShortReply = async (req, res) => {
-//   try {
-//     const { videoId, commentId, message } = req.body;
+export const addShortReply = async (req, res) => {
+  try {
+    const { shortId, commentId, message } = req.body;
 
-//     const userId = req.user._id;
+    const userId = req.user._id;
 
-//     const video = await Video.findById(videoId);
+    const short = await Shorts.findById(shortId);
 
-//     if (!video) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Video not found",
-//       });
-//     }
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
 
-//     const comment = video.comments.id(commentId);
+    const comment = short.comments.id(commentId);
 
-//     if (!comment) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Comment not found",
-//       });
-//     }
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found",
+      });
+    }
 
-//     comment.replies.unshift({
-//       author: userId,
-//       message,
-//     });
+    comment.replies.unshift({
+      author: userId,
+      message,
+    });
 
-//     await video.save();
+    await short.save();
 
-//     const populatedVideo = await Video.findById(videoId)
-//       .populate({
-//         path: "comments.author",
-//         select: "userName photoUrl email",
-//       })
-//       .populate({
-//         path: "comments.replies.author",
-//         select: "userName photoUrl email",
-//       });
+    const populatedShort = await Shorts.findById(shortId)
+      .populate({
+        path: "comments.author",
+        select: "userName photoUrl email",
+      })
+      .populate({
+        path: "comments.replies.author",
+        select: "userName photoUrl email",
+      });
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Reply added successfully",
-//       video: populatedVideo,
-//     });
-//   } catch (error) {
-//     console.log("Error in add Reply", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: `addReply Error: ${error}`,
-//     });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      message: "Reply added successfully",
+      video: populatedShort,
+    });
+  } catch (error) {
+    console.log("Error in add short Reply", error);
+    return res.status(500).json({
+      success: false,
+      message: `addShortReply Error: ${error}`,
+    });
+  }
+};

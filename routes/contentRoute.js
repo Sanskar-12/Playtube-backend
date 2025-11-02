@@ -12,8 +12,8 @@ import {
 } from "../controller/videoController.js";
 import upload from "../middleware/multer.js";
 import {
-  // addShortComment,
-  // addShortReply,
+  addShortComment,
+  addShortReply,
   addShortViews,
   createShorts,
   getAllShorts,
@@ -55,7 +55,7 @@ router.put("/toggle/short/likes", isAuth, toggleShortLikes);
 router.put("/toggle/short/dislikes", isAuth, toggleShortDislikes);
 router.put("/toggle/short/save", isAuth, toggleShortSave);
 router.put("/add/short/views", isAuth, addShortViews);
-// router.post("/add/short/comment", isAuth, addShortComment);
-// router.post("/add/short/reply", isAuth, addShortReply);
+router.post("/add/short/comment", isAuth, addShortComment);
+router.post("/add/short/reply", isAuth, addShortReply);
 
 export default router;
