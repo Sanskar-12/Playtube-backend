@@ -99,3 +99,261 @@ export const getAllShorts = async (req, res) => {
     });
   }
 };
+
+export const toggleShortLikes = async (req, res) => {
+  try {
+    const { shortId } = req.body;
+
+    const userId = req.user._id;
+
+    const short = await Shorts.findById(shortId);
+
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
+
+    if (short.likes.includes(userId)) {
+      short.likes = short.likes.filter(
+        (like) => like._id.toString() !== userId.toString()
+      );
+    } else {
+      short.likes.push(userId);
+      short.dislikes = short.dislikes.filter(
+        (dislike) => dislike._id.toString() !== userId.toString()
+      );
+    }
+
+    await short.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Short liked successfully",
+      short,
+    });
+  } catch (error) {
+    console.log("Error in toggle short likes", error);
+    return res.status(500).json({
+      success: false,
+      message: `toggleShortLikes Error: ${error}`,
+    });
+  }
+};
+
+export const toggleShortDislikes = async (req, res) => {
+  try {
+    const { shortId } = req.body;
+
+    const userId = req.user._id;
+
+    const short = await Shorts.findById(shortId);
+
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
+
+    if (short.dislikes.includes(userId)) {
+      short.dislikes = short.dislikes.filter(
+        (dislike) => dislike._id.toString() !== userId.toString()
+      );
+    } else {
+      short.dislikes.push(userId);
+      short.likes = short.likes.filter(
+        (like) => like._id.toString() !== userId.toString()
+      );
+    }
+
+    await short.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Short disliked successfully",
+      short,
+    });
+  } catch (error) {
+    console.log("Error in toggle short dislikes", error);
+    return res.status(500).json({
+      success: false,
+      message: `toggleShortDislikes Error: ${error}`,
+    });
+  }
+};
+
+// export const toggleShortSave = async (req, res) => {
+//   try {
+//     const { videoId } = req.body;
+
+//     const userId = req.user._id;
+
+//     const video = await Video.findById(videoId);
+
+//     if (!video) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Video not found",
+//       });
+//     }
+
+//     if (video.savedBy.includes(userId)) {
+//       video.savedBy = video.savedBy.filter(
+//         (save) => save._id.toString() !== userId.toString()
+//       );
+//     } else {
+//       video.savedBy.push(userId);
+//     }
+
+//     await video.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Toggle Video Saved successfully",
+//       video,
+//     });
+//   } catch (error) {
+//     console.log("Error in toggle save", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: `toggleSave Error: ${error}`,
+//     });
+//   }
+// };
+
+// export const addShortViews = async (req, res) => {
+//   try {
+//     const { videoId } = req.body;
+
+//     const userId = req.user._id;
+
+//     const video = await Video.findById(videoId);
+
+//     if (!video) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Video not found",
+//       });
+//     }
+
+//     if (!video.views.includes(userId)) {
+//       video.views.push(userId);
+//     }
+
+//     await video.save();
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "View Added successfully",
+//       video,
+//     });
+//   } catch (error) {
+//     console.log("Error in add Views", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: `addViews Error: ${error}`,
+//     });
+//   }
+// };
+
+// export const addShortComment = async (req, res) => {
+//   try {
+//     const { videoId, message } = req.body;
+//     const userId = req.user._id;
+
+//     const video = await Video.findById(videoId);
+
+//     if (!video) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Video not found",
+//       });
+//     }
+
+//     video.comments.unshift({
+//       author: userId,
+//       message,
+//     });
+
+//     await video.save();
+
+//     const populatedVideo = await Video.findById(videoId)
+//       .populate({
+//         path: "comments.author",
+//         select: "userName photoUrl email",
+//       })
+//       .populate({
+//         path: "comments.replies.author",
+//         select: "userName photoUrl email",
+//       });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Comment added successfully",
+//       video: populatedVideo,
+//     });
+//   } catch (error) {
+//     console.log("Error in add Comments", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: `addComment Error: ${error}`,
+//     });
+//   }
+// };
+
+// export const addShortReply = async (req, res) => {
+//   try {
+//     const { videoId, commentId, message } = req.body;
+
+//     const userId = req.user._id;
+
+//     const video = await Video.findById(videoId);
+
+//     if (!video) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Video not found",
+//       });
+//     }
+
+//     const comment = video.comments.id(commentId);
+
+//     if (!comment) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "Comment not found",
+//       });
+//     }
+
+//     comment.replies.unshift({
+//       author: userId,
+//       message,
+//     });
+
+//     await video.save();
+
+//     const populatedVideo = await Video.findById(videoId)
+//       .populate({
+//         path: "comments.author",
+//         select: "userName photoUrl email",
+//       })
+//       .populate({
+//         path: "comments.replies.author",
+//         select: "userName photoUrl email",
+//       });
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Reply added successfully",
+//       video: populatedVideo,
+//     });
+//   } catch (error) {
+//     console.log("Error in add Reply", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: `addReply Error: ${error}`,
+//     });
+//   }
+// };
