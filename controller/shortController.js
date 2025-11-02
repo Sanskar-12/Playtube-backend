@@ -184,79 +184,79 @@ export const toggleShortDislikes = async (req, res) => {
   }
 };
 
-// export const toggleShortSave = async (req, res) => {
-//   try {
-//     const { videoId } = req.body;
+export const toggleShortSave = async (req, res) => {
+  try {
+    const { shortId } = req.body;
 
-//     const userId = req.user._id;
+    const userId = req.user._id;
 
-//     const video = await Video.findById(videoId);
+    const short = await Shorts.findById(shortId);
 
-//     if (!video) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Video not found",
-//       });
-//     }
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
 
-//     if (video.savedBy.includes(userId)) {
-//       video.savedBy = video.savedBy.filter(
-//         (save) => save._id.toString() !== userId.toString()
-//       );
-//     } else {
-//       video.savedBy.push(userId);
-//     }
+    if (short.savedBy.includes(userId)) {
+      short.savedBy = short.savedBy.filter(
+        (save) => save._id.toString() !== userId.toString()
+      );
+    } else {
+      short.savedBy.push(userId);
+    }
 
-//     await video.save();
+    await short.save();
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "Toggle Video Saved successfully",
-//       video,
-//     });
-//   } catch (error) {
-//     console.log("Error in toggle save", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: `toggleSave Error: ${error}`,
-//     });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      message: "Toggle Short Saved successfully",
+      short,
+    });
+  } catch (error) {
+    console.log("Error in toggle short save", error);
+    return res.status(500).json({
+      success: false,
+      message: `toggleShortSave Error: ${error}`,
+    });
+  }
+};
 
-// export const addShortViews = async (req, res) => {
-//   try {
-//     const { videoId } = req.body;
+export const addShortViews = async (req, res) => {
+  try {
+    const { shortId } = req.body;
 
-//     const userId = req.user._id;
+    const userId = req.user._id;
 
-//     const video = await Video.findById(videoId);
+    const short = await Shorts.findById(shortId);
 
-//     if (!video) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Video not found",
-//       });
-//     }
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
 
-//     if (!video.views.includes(userId)) {
-//       video.views.push(userId);
-//     }
+    if (!short.views.includes(userId)) {
+      short.views.push(userId);
+    }
 
-//     await video.save();
+    await short.save();
 
-//     return res.status(200).json({
-//       success: true,
-//       message: "View Added successfully",
-//       video,
-//     });
-//   } catch (error) {
-//     console.log("Error in add Views", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: `addViews Error: ${error}`,
-//     });
-//   }
-// };
+    return res.status(200).json({
+      success: true,
+      message: "View Added successfully",
+      short,
+    });
+  } catch (error) {
+    console.log("Error in add short Views", error);
+    return res.status(500).json({
+      success: false,
+      message: `addShortViews Error: ${error}`,
+    });
+  }
+};
 
 // export const addShortComment = async (req, res) => {
 //   try {
