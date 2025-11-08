@@ -77,7 +77,15 @@ export const getAllShorts = async (req, res) => {
       .sort({
         createdAt: -1,
       })
-      .populate("channel");
+      .populate("channel")
+      .populate({
+        path: "comments.author",
+        select: "userName photoUrl email",
+      })
+      .populate({
+        path: "comments.replies.author",
+        select: "userName photoUrl email",
+      });
 
     if (!shorts) {
       return res.status(404).json({
@@ -292,7 +300,7 @@ export const addShortComment = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Comment added successfully",
-      video: populatedShort,
+      short: populatedShort,
     });
   } catch (error) {
     console.log("Error in add short Comments", error);
@@ -347,7 +355,7 @@ export const addShortReply = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Reply added successfully",
-      video: populatedShort,
+      short: populatedShort,
     });
   } catch (error) {
     console.log("Error in add short Reply", error);
