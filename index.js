@@ -4,6 +4,8 @@ import connectToDB from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 import contentRouter from "./routes/contentRoute.js";
+import playlistRouter from "./routes/playlistRoutes.js";
+import postRouter from "./routes/postRoutes.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -28,6 +30,8 @@ app.get("/", (req, res) => {
 app.use("/api/v1", authRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", contentRouter);
+app.use("/api/v1", playlistRouter);
+app.use("/api/v1", postRouter);
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
