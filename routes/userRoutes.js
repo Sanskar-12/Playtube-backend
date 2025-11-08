@@ -3,6 +3,7 @@ import { isAuth } from "../middleware/isAuth.js";
 import {
   addOrRemoveSubscribers,
   createChannel,
+  getAllChannelData,
   getChannelData,
   getCurrentUser,
   updateChannel,
@@ -44,5 +45,6 @@ router.put(
 );
 router.get("/get/channel", isAuth, getChannelData);
 router.post("/add/or/remove/subscribers", isAuth, addOrRemoveSubscribers);
+router.get("/get/all/channels", isAuth, getAllChannelData);
 
 export default router;

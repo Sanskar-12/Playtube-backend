@@ -237,3 +237,30 @@ export const addOrRemoveSubscribers = async (req, res) => {
     });
   }
 };
+
+export const getAllChannelData = async (req, res) => {
+  try {
+    const channels = await Channel.find()
+      .populate("owner")
+      .populate("videos")
+      .populate("shorts");
+
+    if (!channels) {
+      return res.status(400).json({
+        success: false,
+        message: "Channel not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      channels,
+    });
+  } catch (error) {
+    console.log("Error in get All Channel Data", error);
+    return res.status(500).json({
+      success: false,
+      message: `getAllChannelData Error: ${error}`,
+    });
+  }
+};
