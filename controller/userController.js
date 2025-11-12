@@ -261,7 +261,26 @@ export const getAllChannelData = async (req, res) => {
     const channels = await Channel.find()
       .populate("owner")
       .populate("videos")
-      .populate("shorts");
+      .populate("shorts")
+      .populate("subscribers")
+      .populate({
+        path: "communityPosts",
+        populate: {
+          path: "channel",
+          model: "Channel",
+        },
+      })
+      .populate({
+        path: "playlists",
+        populate: {
+          path: "videos",
+          model: "Video",
+          populate: {
+            path: "channel",
+            model: "Channel",
+          },
+        },
+      });
 
     if (!channels) {
       return res.status(400).json({
