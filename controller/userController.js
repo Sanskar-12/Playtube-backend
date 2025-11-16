@@ -265,10 +265,22 @@ export const getAllChannelData = async (req, res) => {
       .populate("subscribers")
       .populate({
         path: "communityPosts",
-        populate: {
-          path: "channel",
-          model: "Channel",
-        },
+        populate: [
+          {
+            path: "channel",
+            model: "Channel",
+          },
+          {
+            path: "comments.author",
+            model: "User",
+            select: "userName photoUrl",
+          },
+          {
+            path: "comments.replies.author",
+            model: "User",
+            select: "userName photoUrl",
+          },
+        ],
       })
       .populate({
         path: "playlists",

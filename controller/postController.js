@@ -155,7 +155,7 @@ export const addPostComment = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Comment added successfully",
-      video: populatedPost,
+      post: populatedPost,
     });
   } catch (error) {
     console.log("Error in add Post Comments", error);
@@ -210,7 +210,7 @@ export const addPostReply = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Reply added successfully",
-      video: populatedPost,
+      post: populatedPost,
     });
   } catch (error) {
     console.log("Error in add post Reply", error);
