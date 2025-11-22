@@ -357,3 +357,27 @@ export const addReply = async (req, res) => {
     });
   }
 };
+
+export const getLikedVideos = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const likedVideos = await Video.find({
+      likes: { $in: [userId] },
+    })
+      .populate("channel", "name avatar")
+      .populate("likes", "userName");
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched liked Videos successfully",
+      video: likedVideos,
+    });
+  } catch (error) {
+    console.log("Error in get Liked Videos", error);
+    return res.status(500).json({
+      success: false,
+      message: `getLikesVideos Error: ${error}`,
+    });
+  }
+};
