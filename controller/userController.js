@@ -313,3 +313,68 @@ export const getAllChannelData = async (req, res) => {
     });
   }
 };
+
+export const getSubscribedData = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const subsribedChannels = await Channel.find({
+      subscribers: { $in: [userId] },
+    })
+      .populate({
+        path: "videos",
+        populate: {
+          path: "channel",
+          select: "name avatar",
+        },
+      })
+      .populate({
+        path: "shorts",
+        populate: {
+          path: "channel",
+          select: "name avatar",
+        },
+      })
+      .populate({
+        path: "playlists",
+        populate: {
+          path: "channel",
+          select: "name avatar",
+        },
+      })
+      .populate({
+        path: "communityPosts",
+        populate: {
+          path: "channel",
+          select: "name avatar",
+        },
+      });
+
+    if (!subsribedChannels || subsribedChannels.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Failed to find subscribed Channels",
+      });
+    }
+
+    const videos = subsribedChannels.flatMap((c) => c.videos);
+    const shorts = subsribedChannels.flatMap((c) => c.shorts);
+    const playlists = subsribedChannels.flatMap((c) => c.playlists);
+    const communityPosts = subsribedChannels.flatMap((c) => c.communityPosts);
+
+    return res.status(200).json({
+      success: true,
+      subsribedChannels,
+      videos,
+      shorts,
+      playlists,
+      communityPosts,
+    });
+  } catch (error) {
+    console.log("Error in get Subscribed Data", error);
+    return res.status(500).json({
+      success: false,
+      message: `getSubscribedData Error: ${error}`,
+    });
+  }
+};

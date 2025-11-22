@@ -6,6 +6,7 @@ import {
   getAllChannelData,
   getChannelData,
   getCurrentUser,
+  getSubscribedData,
   updateChannel,
 } from "../controller/userController.js";
 import upload from "../middleware/multer.js";
@@ -46,5 +47,6 @@ router.put(
 router.get("/get/channel", isAuth, getChannelData);
 router.post("/add/or/remove/subscribers", isAuth, addOrRemoveSubscribers);
 router.get("/get/all/channels", isAuth, getAllChannelData);
+router.get("/get/all/subscribed/data", isAuth, getSubscribedData);
 
 export default router;

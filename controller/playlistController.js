@@ -115,13 +115,18 @@ export const getSavedPlaylist = async (req, res) => {
     const savedPlaylist = await Playlist.find({
       savedBy: { $in: [userId] },
     })
-      .populate("channel", "name avatar")
-      .populate("savedBy", "userName");
+      .populate("videos")
+      .populate({
+        path: "videos",
+        populate: {
+          path: "channel",
+        },
+      });
 
     return res.status(200).json({
       success: true,
       message: "Fetched Saved Playlist successfully",
-      video: savedPlaylist,
+      playlists: savedPlaylist,
     });
   } catch (error) {
     console.log("Error in get Saved Playlist", error);
