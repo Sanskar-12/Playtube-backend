@@ -7,6 +7,7 @@ import {
   createVideo,
   getAllVideos,
   getLikedVideos,
+  getSavedVideos,
   toggleDislikes,
   toggleLikes,
   toggleSave,
@@ -19,6 +20,7 @@ import {
   createShorts,
   getAllShorts,
   getLikedShorts,
+  getSavedShorts,
   toggleShortDislikes,
   toggleShortLikes,
   toggleShortSave,
@@ -50,6 +52,7 @@ router.put("/add/views", isAuth, addViews);
 router.post("/add/comment", isAuth, addComment);
 router.post("/add/reply", isAuth, addReply);
 router.get("/get/liked/videos", isAuth, getLikedVideos);
+router.get("/get/saved/videos", isAuth, getSavedVideos);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);
@@ -61,5 +64,6 @@ router.put("/add/short/views", isAuth, addShortViews);
 router.post("/add/short/comment", isAuth, addShortComment);
 router.post("/add/short/reply", isAuth, addShortReply);
 router.get("/get/liked/shorts", isAuth, getLikedShorts);
+router.get("/get/saved/shorts", isAuth, getSavedShorts);
 
 export default router;

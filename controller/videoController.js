@@ -381,3 +381,27 @@ export const getLikedVideos = async (req, res) => {
     });
   }
 };
+
+export const getSavedVideos = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const savedVideos = await Video.find({
+      savedBy: { $in: [userId] },
+    })
+      .populate("channel", "name avatar")
+      .populate("savedBy", "userName");
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched Saved Videos successfully",
+      video: savedVideos,
+    });
+  } catch (error) {
+    console.log("Error in get Saved Videos", error);
+    return res.status(500).json({
+      success: false,
+      message: `getSavedVideos Error: ${error}`,
+    });
+  }
+};

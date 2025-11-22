@@ -379,13 +379,37 @@ export const getLikedShorts = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Fetched liked Shorts successfully",
-      video: likedShorts,
+      shorts: likedShorts,
     });
   } catch (error) {
     console.log("Error in get Liked Shorts", error);
     return res.status(500).json({
       success: false,
       message: `getLikesShorts Error: ${error}`,
+    });
+  }
+};
+
+export const getSavedShorts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const savedShorts = await Shorts.find({
+      savedBy: { $in: [userId] },
+    })
+      .populate("channel", "name avatar")
+      .populate("savedBy", "userName");
+
+    return res.status(200).json({
+      success: true,
+      message: "Fetched Saved Shorts successfully",
+      shorts: savedShorts,
+    });
+  } catch (error) {
+    console.log("Error in get Saved Shorts", error);
+    return res.status(500).json({
+      success: false,
+      message: `getSavedShorts Error: ${error}`,
     });
   }
 };
