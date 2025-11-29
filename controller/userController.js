@@ -1,3 +1,4 @@
+import { populate } from "dotenv";
 import uploadOnCloudinary, {
   deleteFromCloudinary,
 } from "../config/cloudinary.js";
@@ -318,7 +319,7 @@ export const getSubscribedData = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const subsribedChannels = await Channel.find({
+    const subscribedChannels = await Channel.find({
       subscribers: { $in: [userId] },
     })
       .populate({
@@ -337,34 +338,57 @@ export const getSubscribedData = async (req, res) => {
       })
       .populate({
         path: "playlists",
-        populate: {
-          path: "channel",
-          select: "name avatar",
-        },
+        populate: [
+          {
+            path: "channel",
+            select: "name avatar",
+          },
+          {
+            path: "videos",
+            populate: {
+              path: "channel",
+              select: "name avatar",
+            },
+          },
+        ],
       })
       .populate({
         path: "communityPosts",
-        populate: {
-          path: "channel",
-          select: "name avatar",
-        },
+        populate: [
+          {
+            path: "channel",
+            select: "name avatar",
+          },
+          {
+            path: "comments",
+            populate: [
+              { path: "author" },
+              {
+                path: "replies",
+                populate: {
+                  path: "author",
+                },
+              },
+            ],
+          },
+        ],
       });
 
-    if (!subsribedChannels || subsribedChannels.length === 0) {
+    if (!subscribedChannels || subscribedChannels.length === 0) {
       return res.status(404).json({
         success: false,
         message: "Failed to find subscribed Channels",
       });
     }
 
-    const videos = subsribedChannels.flatMap((c) => c.videos);
-    const shorts = subsribedChannels.flatMap((c) => c.shorts);
-    const playlists = subsribedChannels.flatMap((c) => c.playlists);
-    const communityPosts = subsribedChannels.flatMap((c) => c.communityPosts);
+    const videos = subscribedChannels.flatMap((c) => c.videos);
+    const shorts = subscribedChannels.flatMap((c) => c.shorts);
+    const playlists = subscribedChannels.flatMap((c) => c.playlists);
+    const communityPosts = subscribedChannels.flatMap((c) => c.communityPosts);
 
     return res.status(200).json({
       success: true,
-      subsribedChannels,
+      subscribedChannels,
       videos,
       shorts,
       playlists,
