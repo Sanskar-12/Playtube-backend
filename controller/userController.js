@@ -410,7 +410,7 @@ export const addHistory = async (req, res) => {
 
     const { contentId, contentType } = req.body;
 
-    if (!["Video", "Short"].includes(contentType)) {
+    if (!["Video", "Shorts"].includes(contentType)) {
       return res.status(400).json({
         success: false,
         message: "Invalid Content Type",
