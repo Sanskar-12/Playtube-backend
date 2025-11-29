@@ -1,9 +1,10 @@
-import { populate } from "dotenv";
 import uploadOnCloudinary, {
   deleteFromCloudinary,
 } from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { User } from "../model/userModel.js";
+import { Video } from "../model/videoModel.js";
+import { Shorts } from "../model/shortModel.js";
 
 export const getCurrentUser = async (req, res) => {
   try {
@@ -399,6 +400,104 @@ export const getSubscribedData = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `getSubscribedData Error: ${error}`,
+    });
+  }
+};
+
+export const addHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const { contentId, contentType } = req.body;
+
+    if (!["Video", "Short"].includes(contentType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid Content Type",
+      });
+    }
+
+    let content;
+    if (contentType === "Video") {
+      content = await Video.findById(contentId);
+    } else {
+      content = await Shorts.findById(contentId);
+    }
+
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: `${contentType} not found`,
+      });
+    }
+
+    // removing duplicate history
+    await User.findByIdAndUpdate(userId, {
+      $pull: {
+        history: {
+          contentId,
+          contentType,
+        },
+      },
+    });
+
+    // adding new history
+    await User.findByIdAndUpdate(userId, {
+      $push: {
+        history: {
+          contentId,
+          contentType,
+          watchedAt: new Date(),
+        },
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "History Added",
+    });
+  } catch (error) {
+    console.log("Error in add History", error);
+    return res.status(500).json({
+      success: false,
+      message: `addHistory Error: ${error}`,
+    });
+  }
+};
+
+export const getHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId)
+      .populate({
+        path: "history.contentId",
+        populate: {
+          path: "channel",
+          select: "name avatar",
+        },
+      })
+      .select("history");
+
+    if (!user)
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+
+    const sortedHistory = [...user.history].sort(
+      (a, b) => new Date(b.watchedAt) - new Date(a.watchedAt)
+    );
+
+    return res.status(200).json({
+      success: true,
+      history: sortedHistory,
+    });
+  } catch (error) {
+    console.log("Error in get History", error);
+    return res.status(500).json({
+      success: false,
+      message: `getHistory Error: ${error}`,
     });
   }
 };
