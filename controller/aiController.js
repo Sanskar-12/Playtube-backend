@@ -18,13 +18,13 @@ export const searchWithAi = async (req, res) => {
     });
 
     const prompt = `You are a search assistant for a video streaming platform. 
-The user query is: "${input}"
+    The user query is: "${input}"
 
-🎯 Your job:
-- If query has typos, correct them.
-- If query has multiple words, break them into meaningful keywords.
-- Return only the corrected word(s), comma-separated.
-- Do not explain, only return keyword(s).`;
+    🎯 Your job:
+    - If query has typos, correct them.
+    - If query has multiple words, break them into meaningful keywords.
+    - Return only the corrected word(s), comma-separated.
+    - Do not explain, only return keyword(s).`;
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
