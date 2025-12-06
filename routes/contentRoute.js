@@ -25,7 +25,10 @@ import {
   toggleShortLikes,
   toggleShortSave,
 } from "../controller/shortController.js";
-import { searchWithAi } from "../controller/aiController.js";
+import {
+  filterCategoryWithAi,
+  searchWithAi,
+} from "../controller/aiController.js";
 
 const router = express.Router();
 
@@ -69,5 +72,6 @@ router.get("/get/saved/shorts", isAuth, getSavedShorts);
 
 // ai route
 router.post("/search", isAuth, searchWithAi);
+router.post("/filter/category", isAuth, filterCategoryWithAi);
 
 export default router;
