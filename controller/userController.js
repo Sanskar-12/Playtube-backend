@@ -501,3 +501,87 @@ export const getHistory = async (req, res) => {
     });
   }
 };
+
+export const getRecommendedContent = async (req, res) => {
+  try {
+    const userId = req.user?._id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const user = await User.findById(userId)
+      .populate("history.contentId")
+      .lean();
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const historyKeywords = user.history.map((h) => h.contentId?.title || "");
+
+    const likedVideos = await Video.find({ likes: userId });
+    const likedShorts = await Shorts.find({ likes: userId });
+    const savedVideos = await Video.find({ saveBy: userId });
+    const savedShorts = await Shorts.find({ saveBy: userId });
+
+    const likedSavedKeywords = [
+      ...likedVideos.map((v) => v.title),
+      ...likedShorts.map((s) => s.title),
+      ...savedVideos.map((v) => v.title),
+      ...savedShorts.map((s) => s.title),
+    ];
+
+    const allKeywords = [...historyKeywords, ...likedSavedKeywords]
+      .filter(Boolean)
+      .map((k) => k.split(" "))
+      .flat();
+
+    const videoConditions = [];
+    const shortConditions = [];
+
+    allKeywords.forEach((kw) => {
+      videoConditions.push(
+        { title: { $regex: kw, $options: "i" } },
+        { description: { $regex: kw, $options: "i" } },
+        { tags: { $regex: kw, $options: "i" } }
+      );
+      shortConditions.push(
+        { title: { $regex: kw, $options: "i" } },
+        { tags: { $regex: kw, $options: "i" } }
+      );
+    });
+
+    const recommendedVideos = await Video.find({
+      $or: videoConditions,
+    }).populate("channel comments.author comments.replies.author");
+
+    const recommendedShorts = await Shorts.find({ $or: shortConditions })
+      .populate("channel", "name avatar")
+      .populate("likes", "username photoUrl");
+
+    const recommendedVideoIds = recommendedVideos.map((v) => v._id);
+    const recommendedShortIds = recommendedShorts.map((s) => s._id);
+
+    const remainingVideos = await Video.find({
+      _id: { $nin: recommendedVideoIds },
+    })
+      .sort({ createdAt: -1 })
+      .populate("channel");
+
+    const remainingShorts = await Shorts.find({
+      _id: { $nin: recommendedShortIds },
+    })
+      .sort({ createdAt: -1 })
+      .populate("channel");
+
+    return res.status(200).json({
+      success: true,
+      recommendedVideos,
+      recommendedShorts,
+      remainingVideos,
+      remainingShorts,
+      usedKeywords: allKeywords,
+    });
+  } catch (error) {
+    console.error("Recommendation error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: `Failed: ${error.message}` });
+  }
+};

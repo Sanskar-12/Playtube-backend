@@ -8,6 +8,7 @@ import {
   getChannelData,
   getCurrentUser,
   getHistory,
+  getRecommendedContent,
   getSubscribedData,
   updateChannel,
 } from "../controller/userController.js";
@@ -52,5 +53,6 @@ router.get("/get/all/channels", isAuth, getAllChannelData);
 router.get("/get/all/subscribed/data", isAuth, getSubscribedData);
 router.post("/add/history", isAuth, addHistory);
 router.get("/get/history", isAuth, getHistory);
+router.get("/get/recommendations", isAuth, getRecommendedContent);
 
 export default router;
