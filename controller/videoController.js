@@ -1,4 +1,6 @@
-import uploadOnCloudinary from "../config/cloudinary.js";
+import uploadOnCloudinary, {
+  deleteFromCloudinary,
+} from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { Video } from "../model/videoModel.js";
 
@@ -402,6 +404,79 @@ export const getSavedVideos = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `getSavedVideos Error: ${error}`,
+    });
+  }
+};
+
+export const getVideoById = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    const video = await Video.findById(videoId)
+      .populate("channel", "name avatar")
+      .populate("likes", "username photoUrl");
+
+    if (!video) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Video not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      video,
+    });
+  } catch (error) {
+    console.log("Error in get Video By Id", error);
+    return res.status(500).json({
+      success: false,
+      message: `getVideoById Error: ${error}`,
+    });
+  }
+};
+
+export const updateVideo = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+    const { title, description, tags } = req.body;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Video not found" });
+    }
+
+    if (title) video.title = title;
+    if (description) video.description = description;
+
+    if (tags) {
+      try {
+        video.tags = JSON.parse(tags);
+      } catch {
+        video.tags = [];
+      }
+    }
+
+    if (req.file) {
+      await deleteFromCloudinary(video.thumbnail);
+      const updatedThumbnail = await uploadOnCloudinary(req.file.path);
+      video.thumbnail = updatedThumbnail;
+    }
+
+    await video.save();
+
+    return res.status(200).json({
+      success: true,
+      video,
+      message: "Video Updated successfully",
+    });
+  } catch (error) {
+    console.log("Error in Update Video", error);
+    return res.status(500).json({
+      success: false,
+      message: `updateVideo Error: ${error}`,
     });
   }
 };

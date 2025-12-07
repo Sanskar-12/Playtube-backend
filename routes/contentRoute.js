@@ -8,9 +8,11 @@ import {
   getAllVideos,
   getLikedVideos,
   getSavedVideos,
+  getVideoById,
   toggleDislikes,
   toggleLikes,
   toggleSave,
+  updateVideo,
 } from "../controller/videoController.js";
 import upload from "../middleware/multer.js";
 import {
@@ -57,6 +59,13 @@ router.post("/add/comment", isAuth, addComment);
 router.post("/add/reply", isAuth, addReply);
 router.get("/get/liked/videos", isAuth, getLikedVideos);
 router.get("/get/saved/videos", isAuth, getSavedVideos);
+router.get("/get/video/:videoId", isAuth, getVideoById);
+router.put(
+  "/update/video/:videoId",
+  upload.single("thumbnail"),
+  isAuth,
+  updateVideo
+);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);
