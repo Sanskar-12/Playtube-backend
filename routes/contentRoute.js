@@ -5,6 +5,7 @@ import {
   addReply,
   addViews,
   createVideo,
+  deleteVideo,
   getAllVideos,
   getLikedVideos,
   getSavedVideos,
@@ -66,6 +67,7 @@ router.put(
   isAuth,
   updateVideo
 );
+router.delete("/delete/video/:videoId", isAuth, deleteVideo);
 
 // shorts route
 router.post("/create/shorts", isAuth, upload.single("shorts"), createShorts);

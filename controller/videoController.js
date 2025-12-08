@@ -480,3 +480,38 @@ export const updateVideo = async (req, res) => {
     });
   }
 };
+
+export const deleteVideo = async (req, res) => {
+  try {
+    const { videoId } = req.params;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Video not found" });
+    }
+
+    await Channel.findByIdAndUpdate(video.channel, {
+      $pull: {
+        videos: video?._id,
+      },
+    });
+
+    await deleteFromCloudinary(video.thumbnail);
+
+    await Video.findByIdAndDelete(videoId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Video deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in Delete Video", error);
+    return res.status(500).json({
+      success: false,
+      message: `deleteVideo Error: ${error}`,
+    });
+  }
+};
