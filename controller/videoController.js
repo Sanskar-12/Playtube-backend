@@ -499,6 +499,7 @@ export const deleteVideo = async (req, res) => {
       },
     });
 
+    await deleteFromCloudinary(video.videoUrl);
     await deleteFromCloudinary(video.thumbnail);
 
     await Video.findByIdAndDelete(videoId);

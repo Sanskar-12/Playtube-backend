@@ -1,4 +1,6 @@
-import uploadOnCloudinary from "../config/cloudinary.js";
+import uploadOnCloudinary, {
+  deleteFromCloudinary,
+} from "../config/cloudinary.js";
 import { Channel } from "../model/channelModel.js";
 import { Shorts } from "../model/shortModel.js";
 
@@ -410,6 +412,111 @@ export const getSavedShorts = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: `getSavedShorts Error: ${error}`,
+    });
+  }
+};
+
+export const fetchShort = async (req, res) => {
+  try {
+    const { shortId } = req.params;
+
+    const short = await Shorts.findById(shortId)
+      .populate("channel", "name avatar")
+      .populate("likes", "username photoUrl");
+
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      short,
+    });
+  } catch (error) {
+    console.log("Error in fetch Short", error);
+    return res.status(500).json({
+      success: false,
+      message: `fetchShort Error: ${error}`,
+    });
+  }
+};
+
+export const updateShort = async (req, res) => {
+  try {
+    const { shortId } = req.params;
+    const { title, tags, description } = req.body;
+
+    const short = await Shorts.findById(shortId);
+
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
+
+    if (title) short.title = title;
+    if (description) short.description = description;
+
+    if (tags) {
+      try {
+        short.tags = JSON.parse(tags);
+      } catch {
+        short.tags = [];
+      }
+    }
+
+    await short.save();
+
+    return res.status(200).json({
+      success: true,
+      short,
+      message: "Short Updated Successfully",
+    });
+  } catch (error) {
+    console.log("Error in update Short", error);
+    return res.status(500).json({
+      success: false,
+      message: `updateShort Error: ${error}`,
+    });
+  }
+};
+
+export const deleteShort = async (req, res) => {
+  try {
+    const { shortId } = req.params;
+
+    const short = await Shorts.findById(shortId);
+
+    if (!short) {
+      return res.status(404).json({
+        success: false,
+        message: "Short not found",
+      });
+    }
+
+    await Channel.findByIdAndUpdate(short.channel, {
+      $pull: {
+        shorts: short?._id,
+      },
+    });
+
+    await deleteFromCloudinary(short.shortsUrl);
+
+    await Shorts.findByIdAndDelete(shortId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Short deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in delete Short", error);
+    return res.status(500).json({
+      success: false,
+      message: `deleteShort Error: ${error}`,
     });
   }
 };
