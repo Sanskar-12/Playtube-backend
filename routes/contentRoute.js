@@ -84,7 +84,7 @@ router.post("/add/short/reply", isAuth, addShortReply);
 router.get("/get/liked/shorts", isAuth, getLikedShorts);
 router.get("/get/saved/shorts", isAuth, getSavedShorts);
 router.get("/get/short/:shortId", isAuth, fetchShort);
-router.put("/update/short/:shortId", isAuth, updateShort);
+router.put("/update/short/:shortId", upload.none(), isAuth, updateShort);
 router.delete("/delete/short/:shortId", isAuth, deleteShort);
 
 // ai route
