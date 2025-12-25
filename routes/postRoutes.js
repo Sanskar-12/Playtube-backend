@@ -5,6 +5,7 @@ import {
   addPostComment,
   addPostReply,
   createPost,
+  deletePost,
   getAllPosts,
   togglePostLikes,
 } from "../controller/postController.js";
@@ -16,5 +17,6 @@ router.get("/get/all/posts", isAuth, getAllPosts);
 router.put("/toggle/post/likes", isAuth, togglePostLikes);
 router.post("/add/post/comment", isAuth, addPostComment);
 router.post("/add/post/reply", isAuth, addPostReply);
+router.delete("/delete/post/:postId", isAuth, deletePost);
 
 export default router;

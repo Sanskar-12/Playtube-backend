@@ -220,3 +220,37 @@ export const addPostReply = async (req, res) => {
     });
   }
 };
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: "Post not found",
+      });
+    }
+
+    await Channel.findByIdAndUpdate(post.channel, {
+      $pull: {
+        communityPosts: post?._id,
+      },
+    });
+
+    await Post.findByIdAndDelete(postId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Post Deleted Successfully",
+    });
+  } catch (error) {
+    console.log("Error in delete post Reply", error);
+    return res.status(500).json({
+      success: false,
+      message: `deletePost Error: ${error}`,
+    });
+  }
+};
