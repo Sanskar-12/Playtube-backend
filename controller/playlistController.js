@@ -175,7 +175,7 @@ export const updatePlaylist = async (req, res) => {
     const { playlistId } = req.params;
     const { title, description, addVideos = [], removeVideos = [] } = req.body;
 
-    const playlist = await Playlist.findById(playlistId);
+    const playlist = await Playlist.findById(playlistId).populate("videos");
 
     if (!playlist) {
       return res
